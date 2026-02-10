@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from aiogram import Bot, Dispatcher
 from aiogram_dialog import DialogManager
 from telegram_bot.dialogs import main_menu_dialog, add_task_dialog, start_handler
