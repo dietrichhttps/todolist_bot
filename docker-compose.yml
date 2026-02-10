@@ -45,6 +45,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=django-db
       - API_URL=http://web:8000/api
+      - USE_DOCKER=True
     ports:
       - "8000:8000"
     depends_on:
@@ -60,7 +61,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.web
     command: >
-      sh -c "celery -A todolist worker -l info -B"
+      sh -c "python manage.py migrate --run-syncdb &&
+             celery -A todolist worker -l info -B"
     environment:
       - DEBUG=True
       - DJANGO_SECRET_KEY=django-insecure-dev-key-change-in-production
@@ -71,6 +73,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=django-db
+      - USE_DOCKER=True
     depends_on:
       db:
         condition: service_healthy
