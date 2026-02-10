@@ -102,22 +102,22 @@ main_menu_dialog = Dialog(
 add_task_dialog = Dialog(
     Window(
         Const("📝 Добавление задачи\n\nВведите название задачи:"),
-        TextInput(id="title_input", on_process=title_processing),
+        TextInput(id="title_input", on_success=title_processing),
         state=AddTaskStates.TITLE,
     ),
     Window(
         Const("📝 Добавление задачи\n\nВведите описание задачи (или нажмите /skip для пропуска):"),
-        TextInput(id="description_input", on_process=description_processing),
+        TextInput(id="description_input", on_success=description_processing),
         state=AddTaskStates.DESCRIPTION,
     ),
     Window(
         Const("📝 Добавление задачи\n\nВведите категорию (или нажмите /skip для пропуска):"),
-        TextInput(id="category_input", on_process=category_processing),
+        TextInput(id="category_input", on_success=category_processing),
         state=AddTaskStates.CATEGORY,
     ),
     Window(
         Const("📝 Добавление задачи\n\nВведите дату выполнения в формате ГГГГ-ММ-ДД ЧЧ:ММ (или нажмите /skip для пропуска):"),
-        TextInput(id="due_date_input", on_process=due_date_processing),
+        TextInput(id="due_date_input", on_success=due_date_processing),
         state=AddTaskStates.DUE_DATE,
     ),
     Window(

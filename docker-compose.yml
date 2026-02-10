@@ -62,9 +62,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.web
     command: >
-      sh -c "PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -tc \"SELECT 1 FROM pg_database WHERE datname = '$POSTGRES_DB'\" | grep -q 1 || PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -c \"CREATE DATABASE $POSTGRES_DB\" &&
-             python manage.py migrate &&
-             celery -A todolist worker -l info -B"
+      sh -c "sleep 10 && celery -A todolist worker -l info -B"
     environment:
       - DEBUG=True
       - DJANGO_SECRET_KEY=django-insecure-dev-key-change-in-production
@@ -77,6 +75,8 @@ services:
       - CELERY_RESULT_BACKEND=django-db
       - USE_DOCKER=True
     depends_on:
+      web:
+        condition: service_started
       db:
         condition: service_healthy
       redis:
