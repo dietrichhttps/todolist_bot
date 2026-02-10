@@ -5,10 +5,21 @@ from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.api.entities import StartMode
 from aiogram import types
 from aiogram_dialog.dialog import DialogManager
+from aiogram.fsm.state import StatesGroup, State
 import aiohttp
 import os
 
 API_URL = os.environ.get('API_URL', 'http://web:8000/api')
+
+class MainMenuStates(StatesGroup):
+    MENU = State()
+
+class AddTaskStates(StatesGroup):
+    TITLE = State()
+    DESCRIPTION = State()
+    CATEGORY = State()
+    DUE_DATE = State()
+    CONFIRM = State()
 
 async def get_tasks_http(user_id: int) -> list:
     async with aiohttp.ClientSession() as session:
@@ -27,7 +38,7 @@ async def create_task_http(data: dict) -> dict:
 async def start_handler(event: types.Message, dialog_manager: DialogManager):
     await dialog_manager.start(MainMenuStates.MENU, mode=StartMode.RESET_STACK)
 
-async def my_tasks_handler(event: types.Message, dialog_manager: DialogManager):
+async def my_tasks_handler(event: types.CallbackQuery, dialog_manager: DialogManager):
     user_id = event.from_user.id
     tasks = await get_tasks_http(user_id)
     if tasks:
@@ -40,9 +51,9 @@ async def my_tasks_handler(event: types.Message, dialog_manager: DialogManager):
         text = "📋 Ваши задачи:\n\n" + "\n".join(tasks_text)
     else:
         text = "📋 У вас пока нет задач."
-    await event.answer(text)
+    await event.message.answer(text)
 
-async def add_task_start_handler(event: types.Message, dialog_manager: DialogManager):
+async def add_task_start_handler(event: types.CallbackQuery, dialog_manager: DialogManager):
     await dialog_manager.start(AddTaskStates.TITLE, mode=StartMode.RESET_STACK)
 
 async def title_processing(event: types.Message, dialog_manager: DialogManager, text: str):
@@ -76,16 +87,6 @@ async def confirm_task_handler(event: types.CallbackQuery, dialog_manager: Dialo
     else:
         await event.message.answer("❌ Ошибка при создании задачи.")
     await dialog_manager.start(MainMenuStates.MENU, mode=StartMode.RESET_STACK)
-
-class MainMenuStates:
-    MENU = 0
-
-class AddTaskStates:
-    TITLE = 0
-    DESCRIPTION = 1
-    CATEGORY = 2
-    DUE_DATE = 3
-    CONFIRM = 4
 
 main_menu_dialog = Dialog(
     Window(
